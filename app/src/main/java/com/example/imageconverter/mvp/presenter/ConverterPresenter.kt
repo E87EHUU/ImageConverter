@@ -1,5 +1,6 @@
 package com.example.imageconverter.mvp.presenter
 
+import com.example.imageconverter.mvp.model.ConvertAndSaveImpl
 import com.example.imageconverter.mvp.model.ImagePickerImpl
 import com.example.imageconverter.mvp.view.ConverterView
 import com.example.imageconverter.utils.disposeBy
@@ -7,15 +8,36 @@ import com.example.imageconverter.utils.subscribeByDefault
 import com.github.terrakok.cicerone.Router
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import moxy.MvpPresenter
+import java.util.concurrent.TimeUnit
 
 class ConverterPresenter(private val router: Router,
+                         private val convertAndSave: ConvertAndSaveImpl,
                          private val imagePicker: ImagePickerImpl
 ) : MvpPresenter<ConverterView>() {
 
     private val bag = CompositeDisposable()
 
+    var uri: String? = null
+
     fun requestPermission() {
         imagePicker.requestPermission()
+    }
+
+    fun convertAndSave() {
+        viewState.showLoading()
+        convertAndSave.convertToPngRx(uri)
+            .delay(3, TimeUnit.SECONDS)
+            .subscribeByDefault()
+            .subscribe(
+                {
+                    viewState.hideLoading()
+                    viewState.makeToastSuccess()
+                },
+                {
+                    viewState.makeToastError(it)
+                    viewState.hideLoading()
+                }
+            ).disposeBy(bag)
     }
 
     fun pickImage() {

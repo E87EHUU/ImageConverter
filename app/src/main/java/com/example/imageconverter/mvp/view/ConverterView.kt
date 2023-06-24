@@ -12,7 +12,7 @@ interface ConverterView : MvpView {
     fun showDialogForClosedPermission()
     fun showLoading()
     fun hideLoading()
-    fun makeToastSuccess(pack: String)
+    fun makeToastSuccess()
     fun makeToastError(error: Throwable)
     fun makeToastGallery()
 }
