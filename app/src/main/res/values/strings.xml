@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ImageConverter</string>
+    <string name="convert_to_png_and_save">Convert to PNG and save</string>
+    <string name="get_picture_from_gallery">Get picture from Gallery</string>
 </resources>
