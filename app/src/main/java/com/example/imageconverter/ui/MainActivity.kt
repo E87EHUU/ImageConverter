@@ -34,6 +34,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         App.instance.navigationHolder.removeNavigator()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         supportFragmentManager.fragments.forEach { currentFragment ->
             if (currentFragment is OnBackPressedListener && currentFragment.onBackPressed()) {

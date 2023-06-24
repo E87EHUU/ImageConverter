@@ -1,32 +1,27 @@
 package com.example.imageconverter.mvp.presenter
 
-import com.example.imageconverter.mvp.model.ConvertAndSaveImpl
-import com.example.imageconverter.mvp.model.ImagePickerImpl
+import com.example.imageconverter.mvp.model.IConvertAndSave
 import com.example.imageconverter.mvp.view.ConverterView
 import com.example.imageconverter.utils.disposeBy
-import com.example.imageconverter.utils.subscribeByDefault
 import com.github.terrakok.cicerone.Router
+import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import moxy.MvpPresenter
 
 class ConverterPresenter(private val router: Router,
-                         private val convertAndSave: ConvertAndSaveImpl,
-                         private val imagePicker: ImagePickerImpl
+                         private val convertAndSave: IConvertAndSave,
+                         private val scheduler: Scheduler
 ) : MvpPresenter<ConverterView>() {
 
     private var bag = CompositeDisposable()
 
     var uri: String? = null
 
-    fun requestPermission() {
-        imagePicker.requestPermission()
-    }
-
     fun convertAndSave() {
         viewState.showLoading()
         viewState.showCancelBtn()
         convertAndSave.convertToPngRx(uri)
-            .subscribeByDefault()
+            .observeOn(scheduler)
             .subscribe(
                 {
                     viewState.hideLoading()
@@ -39,19 +34,6 @@ class ConverterPresenter(private val router: Router,
                     viewState.hideLoading()
                 }
             ).disposeBy(bag)
-    }
-
-    fun pickImage() {
-        imagePicker.pickImageRx()
-            .subscribeByDefault()
-            .subscribe(
-                {
-                    viewState.makeToastGallery()
-                },
-                {
-                    viewState.makeToastError(it)
-                })
-            .disposeBy(bag)
     }
 
     fun cancelConverting() {
